@@ -40,6 +40,10 @@ PrefabInstance:
       value: 1
       objectReference: {fileID: 0}
     - target: {fileID: 4987479174646060200, guid: c236591211130fc40ae2c0facf3ef9f7, type: 3}
+      propertyPath: InitialModule.startColor.maxColor.a
+      value: 1
+      objectReference: {fileID: 0}
+    - target: {fileID: 4987479174646060200, guid: c236591211130fc40ae2c0facf3ef9f7, type: 3}
       propertyPath: InitialModule.startColor.maxColor.b
       value: 0.039649345
       objectReference: {fileID: 0}
@@ -113,7 +117,7 @@ PrefabInstance:
       objectReference: {fileID: 0}
     - target: {fileID: 4987479174646060205, guid: c236591211130fc40ae2c0facf3ef9f7, type: 3}
       propertyPath: m_Name
-      value: Fire
+      value: Fire Variant
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: c236591211130fc40ae2c0facf3ef9f7, type: 3}

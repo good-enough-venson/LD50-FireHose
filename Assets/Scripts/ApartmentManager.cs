@@ -11,18 +11,37 @@ public class ApartmentManager : MonoBehaviour
     public Vector3 roomSize = new Vector3(6f, 3.8f, 4f);
     public Room[] roomDatae = { };
 
-    public enum FireState {
-        None, Smoke, Fire, Burnt
-    }
+    public enum FireState { None, Smoke, Fire, Burnt }
+
+    public enum Modifier { None, Water, Ladder, Argon, Stim }
 
     [System.Serializable]
-    public struct Room
+    public class Room
     {
-        public GameObject roomObj;
-        public Vector2Int roomNum;
-        public FireState fireState;
-        public float lastFireStateChange;
+        public string roomName;
+        public RoomScript roomScript;
+        public Vector2Int gridPos;
+        public FireState fireState = FireState.None;
+        public Modifier modifier = Modifier.None;
         public List<GameObject> residents;
+
+        public float burn { get; private set; }
+
+        public void IncrementBurn(float amount)
+        {
+            if(amount > 0f && modifier == Modifier.Argon) return; 
+            if(amount > 0f && modifier == Modifier.Stim) amount *= 2;
+
+            burn += amount;
+            burn = Mathf.Max(Mathf.Min(burn, 1f), 0f);
+            
+            fireState = burn < 0.1f ? FireState.None : 
+                burn < 0.3f ? FireState.Smoke : 
+                burn < 1f ? FireState.Fire : 
+                FireState.Burnt;
+
+            if(roomScript) roomScript.UpdateVisuals();
+        }
     }
 
     private void Awake()
@@ -39,18 +58,27 @@ public class ApartmentManager : MonoBehaviour
                 );
 
                 var r = Instantiate<GameObject> (
-                    roomPrefab, p, Quaternion.identity, transform
-                );
+                    roomPrefab, p, transform.rotation, transform
+                ).GetComponent<RoomScript>();
 
-                roomDatae[y * columns + x] = new Room
-                {
-                    roomObj = r,
-                    roomNum = new Vector2Int(x, y),
-                    fireState = FireState.None,
-                    lastFireStateChange = 0,
+                roomDatae[y*columns + x] = new Room {
+                    roomName = string.Format("Room {0}0{1}", y, x),
+                    roomScript = r,
+                    gridPos = new Vector2Int(x, y),
                     residents = new List<GameObject>()
                 };
+                
+                r.data = roomDatae[y*columns + x];
             }
         }
+    }
+
+    public Room GetRoom(int x, int y) {
+        if (x < 0 || y < 0 || x >= columns || y >= rows) return null;
+        else if (y*columns + x >= roomDatae.Length) return null;
+
+        var r = roomDatae[y*columns + x];
+        Debug.Log(string.Format("[{0},{1}] {2}: {3}", x, y, r.roomName, r.burn));
+        return roomDatae[y*columns + x];
     }
 }
